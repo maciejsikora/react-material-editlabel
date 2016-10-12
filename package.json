@@ -1,0 +1,36 @@
+{
+  "name": "react-material-editlabel",
+  "version": "1.0.0",
+  "description": "React component - label with edit mode after click",
+  "main": "editlabel.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maciejsikora/react-material-editlabel.git"
+  },
+  "keywords": [
+    "react",
+    "react-label",
+    "react-component",
+    "label"
+  ],
+  "author": "Maciej Sikora hello@maciejsikora.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maciejsikora/react-material-editlabel/issues"
+  },
+  "homepage": "https://github.com/maciejsikora/react-material-editlabel#readme",
+  "devDependencies": {
+    "babel-jest": "^16.0.0",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "jest": "^16.0.1",
+    "react-test-renderer": "^15.3.2"
+  },
+  "dependencies": {
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  }
+}
