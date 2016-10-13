@@ -1,6 +1,6 @@
 {
   "name": "react-material-editlabel",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "React component - label with edit mode after click",
   "main": "./dist/editlabel.js",
   "scripts": {
@@ -16,7 +16,8 @@
     "react",
     "react-label",
     "react-component",
-    "label"
+    "label",
+    "react-material"
   ],
   "author": "Maciej Sikora hello@maciejsikora.com",
   "license": "MIT",
