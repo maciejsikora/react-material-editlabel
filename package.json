@@ -1,0 +1,34 @@
+{
+  "name": "react-material-editlabel-docs",
+  "version": "1.0.0",
+  "description": "Presentation of react-material-editlabel",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maciejsikora/react-material-editlabel.git"
+  },
+  "author": "Maciej Sikora hello@maciejsikora.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maciejsikora/react-material-editlabel/issues"
+  },
+  "homepage": "https://github.com/maciejsikora/react-material-editlabel#readme",
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-2": "^6.17.0",
+    "material-ui": "^0.16.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-material-editlabel": "^1.0.2",
+    "react-tap-event-plugin": "^1.0.0",
+    "webpack": "^1.13.2"
+  }
+}
