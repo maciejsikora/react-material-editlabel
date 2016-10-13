@@ -6,12 +6,14 @@ Class creates element with two states - label, and TextField in edit mode
 **/
 class EditLabel extends Component{
 
-    bodyClickEvent=null;//click event on page body
-    changeDeffer=null;
+
 
     constructor(props){
 
       super(props);
+
+      this.bodyClickEvent=null;//click event on page body
+      this.changeDeffer=null;
 
       this.state={
 
@@ -52,7 +54,7 @@ class EditLabel extends Component{
 
     }
 
-    _bodyClickHandler=function(e){
+    _bodyClickHandler(e){
 
       if ( !e.target.dataset || typeof e.target.dataset.id ==="undefined"  ||  e.target.dataset.id!=this.props.id){
 
