@@ -6,6 +6,8 @@ Class creates element with two states - label, and TextField in edit mode
 **/
 class EditLabel extends Component{
 
+    static INIT_CLICK=1; //edition on single click
+    static INIT_DBCLICK=2; //edition on double click
 
 
     constructor(props){
@@ -79,7 +81,14 @@ class EditLabel extends Component{
         document.addEventListener("click",this.bodyClickEvent,false);
     }
 
-    handleLabelClick(){
+    handleLabelClick(type,e){
+
+      if (this.props.initBy!==type)
+      return; //it is not this event
+
+      //block propagate
+      e.stopPropagation();
+      e.preventDefault();
 
       this.setState({edit:true});
 
@@ -102,6 +111,12 @@ class EditLabel extends Component{
 
     }
 
+    handleInputClick(e){
+
+      //block events bubbling
+      e.stopPropagation();
+    }
+
     getLabelStyle(){
 
       return {
@@ -111,14 +126,20 @@ class EditLabel extends Component{
 
     render(){
 
-      let { id,className,onChange,onKeyPress,inputClassName,onEnterClick,labelClassName,...other } = this.props;
+      let { id,className,onChange,onKeyPress,inputClassName,onEnterClick,labelClassName,initBy,...other } = this.props;
 
       let element;
       if (this.state.edit)
-      element=<TextField {...other} ref="input" data-id={this.props.id} value={this.state.value} className={this.props.inputClassName}  onChange={this.handleChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}></TextField>;
+      element=<TextField {...other} ref="input" data-id={this.props.id} name={"input_"+this.props.id} onClick={this.handleInputClick.bind(this)} value={this.state.value} className={this.props.inputClassName}  onChange={this.handleChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}></TextField>;
       else
-      element=<label style={this.getLabelStyle()} ref="label" className={this.props.labelClassName} onClick={this.handleLabelClick.bind(this)}>{this.state.value}</label>;
-
+      element=(
+      <label style={this.getLabelStyle()} ref="label"
+      className={this.props.labelClassName}
+      onDoubleClick={this.handleLabelClick.bind(this,EditLabel.INIT_DBCLICK)}
+      onClick={this.handleLabelClick.bind(this,EditLabel.INIT_CLICK)}
+      >{this.state.value}
+      </label>
+      );
 
       return element;
 
@@ -127,6 +148,8 @@ class EditLabel extends Component{
 };
 
 EditLabel.propTypes = {
+
+  initBy:React.PropTypes.number.isRequired,
   id: React.PropTypes.number.isRequired,
   value:   React.PropTypes.string,
   inputClassName: React.PropTypes.string,
@@ -138,6 +161,7 @@ EditLabel.propTypes = {
 };
 
 EditLabel.defaultProps = {
+  initBy:EditLabel.INIT_CLICK, //default is single click
   value: "",
   inputClassName:"editlabel-input",
   labelClassName:"editlabel-label",
