@@ -14,7 +14,7 @@ npm install material-ui --save
 ```
 
 
-### Imort package ( ES6 )
+### Import package ( ES6 )
 
 ```javascript
 import EditLabel from "react-material-editlabel";
