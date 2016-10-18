@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import ReactDOM from "react-dom";
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import EditLabel from "./editlabel";
+import EditLabel from "react-material-editlabel";
 import Paper from 'material-ui/Paper';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {List, ListItem} from 'material-ui/List';
@@ -11,6 +11,7 @@ import ContentSend from 'material-ui/svg-icons/content/send';
 import ContentDrafts from 'material-ui/svg-icons/content/drafts';
 import Divider from 'material-ui/Divider';
 import ActionInfo from 'material-ui/svg-icons/action/info';
+import TextField from 'material-ui/TextField';
 injectTapEventPlugin();
 
 class App extends Component{
@@ -21,29 +22,37 @@ class App extends Component{
 
     this.state={
       labels:[
-      "You are the one",
-      "Follow the white rabbit",
-      "War, war never changes",
-      "Life is like box of chocolates",
-      "One for all, all for one"
-      ]
+      {label:"You are the one",options:{input:{hintText:"Enter text"} }},
+      {label:"Follow the white rabbit ( std. input ) ",options:{material:false}},
+      {label:"War, war never changes (double click)",options:{ input:{hintText:"Enter text"},initBy:EditLabel.INIT_DBCLICK,label:{ style:{color:"red"} }} },
+      {label:"Life is like box of chocolates",options:{input:{hintText:"Enter text"}}},
+      {label:"One for all, all for one (double click)",options:{input:{hintText:"Enter text"},initBy:EditLabel.INIT_DBCLICK}}
+      ],
+      log:["Here is event log"]
     }
   }
 
-  onListChange(value,id){
+  onChange(value,id){
 
-    let labels=this.state.labels;
-    labels[id]=value;
+    this.log("Text change. Current value is: "+value);
+  }
 
-    if (value.trim().length===0){
-      //remove element from list
+  //log what is happening
+  log(value){
 
-      labels.splice(id,1);
+    this.setState({log:[value].concat(this.state.log) })
+  }
 
-    }
+  onEditEnd(value,id){
 
-    //refresh
-    this.setState({labels:labels});
+
+      this.log("End of edition. Current value is: "+value);
+
+  }
+
+  onEditStart(value,id){
+
+    this.log("Start of edition. Current value is: "+value);
   }
 
   render(){
@@ -51,16 +60,23 @@ class App extends Component{
   let i=0;
   let self=this;
 
-  function getEditLabel(text){
+  function getEditLabel(el){
+
+    const {...opts} = el.options;
 
     i++;
-    return <EditLabel onChange={self.onListChange.bind(self)} value={text} hintText="writeSomething" name={"field"+i}   id={i} />
+    return <EditLabel {...opts} onEditStart={self.onEditStart.bind(self)} onChange={self.onChange.bind(self)} onEditEnd={self.onEditEnd.bind(self)} defValue={el.label} hintText="writeSomething" name={"field"+i}   id={i} />
   }
 
-  let list=this.state.labels.map((el)=>{
+  const list=this.state.labels.map((el)=>{
 
     return <ListItem  key={i} disabled={true} primaryText={getEditLabel(el)}  />
 
+  });
+
+  const log=this.state.log.map((l,index)=>{
+
+      return <p key={index} ><b>#{this.state.log.length-index}</b> {l}</p>;
   });
 
   return (
@@ -69,8 +85,11 @@ class App extends Component{
     <List>
       {list}
     </List>
+    <Paper  zDepth={2} style={{padding:"20px", height:"200px", overflowY:"scroll"}} >
+    <h3>Logs created in EditLabel callbacks:</h3>
+      {log}
     </Paper>
-
+    </Paper>
     </MuiThemeProvider>
     )
   }

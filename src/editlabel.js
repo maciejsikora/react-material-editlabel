@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TextField from 'material-ui/TextField';
 
 /**
+@author Maciej Sikora
 Class creates element with two states - label, and TextField in edit mode
 **/
 class EditLabel extends Component{
@@ -17,18 +18,17 @@ class EditLabel extends Component{
       this.bodyClickEvent=null;//click event on page body
       this.changeDeffer=null;
 
+
       this.state={
 
         edit:false, //edit mode
-        value:this.props.value
+        value:this.props.defValue
       };
 
+      this.lastValue=this.props.defValue;
+
     }
 
-    componentWillReceiveProps(props){
-
-      this.setState({value:props.value});
-    }
 
     //input value change handler
     handleChange(e){
@@ -53,6 +53,20 @@ class EditLabel extends Component{
       //we clicked ouside current edited element
       this._removeBodyListener();
       this.setState({edit:false});//cancel edit
+
+      if (this.state.value.trim().length===0 && !this.props.clearEnable){
+
+        //value was cleared but it is blocked
+        this.setState({value:this.lastValue});//back to last value
+
+      }else
+      this.lastValue=this.state.value;//save last value;
+
+      if (this.props.onEditEnd!=null){
+
+        this.props.onEditEnd(this.state.value, this.props.id);
+
+      }
 
     }
 
@@ -95,6 +109,9 @@ class EditLabel extends Component{
       //set binding
       this._addBodyListener();
 
+      if (this.props.onEditStart!==null)
+      this.props.onEditStart(this.state.value, this.props.id);
+
     }
 
     handleKeyPress(e){
@@ -126,15 +143,23 @@ class EditLabel extends Component{
 
     render(){
 
-      let { id,className,onChange,onKeyPress,inputClassName,onEnterClick,labelClassName,initBy,...other } = this.props;
+      const props = this.props;
+      const { ...tf } = props.input;//textField props
+      const { ...label } = props.label;//label props
+
+      let inputJSX;
+      if (this.props.material)
+      inputJSX=<TextField {...tf} ref="input" data-id={props.id} name={"input_"+props.id} onClick={this.handleInputClick.bind(this)} value={this.state.value} onChange={this.handleChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}></TextField>;
+      else //standard input
+        inputJSX=<input {...tf} ref="input" data-id={props.id} name={"input_"+props.id} onClick={this.handleInputClick.bind(this)} value={this.state.value} onChange={this.handleChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}></input>;
 
       let element;
       if (this.state.edit)
-      element=<TextField {...other} ref="input" data-id={this.props.id} name={"input_"+this.props.id} onClick={this.handleInputClick.bind(this)} value={this.state.value} className={this.props.inputClassName}  onChange={this.handleChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}></TextField>;
+      element=inputJSX;
       else
       element=(
       <label style={this.getLabelStyle()} ref="label"
-      className={this.props.labelClassName}
+      {...label}
       onDoubleClick={this.handleLabelClick.bind(this,EditLabel.INIT_DBCLICK)}
       onClick={this.handleLabelClick.bind(this,EditLabel.INIT_CLICK)}
       >{this.state.value}
@@ -149,24 +174,31 @@ class EditLabel extends Component{
 
 EditLabel.propTypes = {
 
+  input:React.PropTypes.object,
+  label:React.PropTypes.object,
   initBy:React.PropTypes.number.isRequired,
   id: React.PropTypes.number.isRequired,
-  value:   React.PropTypes.string,
-  inputClassName: React.PropTypes.string,
-  labelClassName: React.PropTypes.string,
-
-  onChange: React.PropTypes.func,
-  onEnterClick: React.PropTypes.func
+  defValue:   React.PropTypes.string,
+  onEditEnd:React.PropTypes.func, //calls on end of edit
+  onChange: React.PropTypes.func,//calls on every change
+  onEnterClick: React.PropTypes.func,//calls after enter click
+  onEditStart:React.PropTypes.func,//calls when edition starts
+  material: React.PropTypes.bool, //if true it uses TextField from material if false <input>
+  clearEnable:React.PropTypes.bool //is possible to remove all text - clear it
 
 };
 
 EditLabel.defaultProps = {
+  input:{ className:"editlabel-input"},
+  label:{ className:"editlabel-label"},
   initBy:EditLabel.INIT_CLICK, //default is single click
-  value: "",
-  inputClassName:"editlabel-input",
-  labelClassName:"editlabel-label",
+  defValue:"",
+  clearEnable:false,
   onChange:null,
-  onEnterClick:null
+  onEditEnd:null, //
+  onEnterClick:null,
+  onEditStart:null,
+  material:true
 };
 
 export default EditLabel;

@@ -46,6 +46,8 @@
 
 	"use strict";
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
@@ -60,9 +62,9 @@
 
 	var _reactTapEventPlugin2 = _interopRequireDefault(_reactTapEventPlugin);
 
-	var _editlabel = __webpack_require__(394);
+	var _reactMaterialEditlabel = __webpack_require__(178);
 
-	var _editlabel2 = _interopRequireDefault(_editlabel);
+	var _reactMaterialEditlabel2 = _interopRequireDefault(_reactMaterialEditlabel);
 
 	var _Paper = __webpack_require__(285);
 
@@ -98,7 +100,13 @@
 
 	var _info2 = _interopRequireDefault(_info);
 
+	var _TextField = __webpack_require__(179);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -117,43 +125,73 @@
 	    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
 	    _this.state = {
-	      labels: ["You are the one", "Follow the white rabbit", "War, war never changes", "Life is like box of chocolates", "One for all, all for one"]
+	      labels: [{ label: "You are the one", options: { input: { hintText: "Enter text" } } }, { label: "Follow the white rabbit ( std. input ) ", options: { material: false } }, { label: "War, war never changes (double click)", options: { input: { hintText: "Enter text" }, initBy: _reactMaterialEditlabel2.default.INIT_DBCLICK, label: { style: { color: "red" } } } }, { label: "Life is like box of chocolates", options: { input: { hintText: "Enter text" } } }, { label: "One for all, all for one (double click)", options: { input: { hintText: "Enter text" }, initBy: _reactMaterialEditlabel2.default.INIT_DBCLICK } }],
+	      log: ["Here is event log"]
 	    };
 	    return _this;
 	  }
 
 	  _createClass(App, [{
-	    key: "onListChange",
-	    value: function onListChange(value, id) {
+	    key: "onChange",
+	    value: function onChange(value, id) {
 
-	      var labels = this.state.labels;
-	      labels[id] = value;
+	      this.log("Text change. Current value is: " + value);
+	    }
 
-	      if (value.trim().length === 0) {
-	        //remove element from list
+	    //log what is happening
 
-	        labels.splice(id, 1);
-	      }
+	  }, {
+	    key: "log",
+	    value: function log(value) {
 
-	      //refresh
-	      this.setState({ labels: labels });
+	      this.setState({ log: [value].concat(this.state.log) });
+	    }
+	  }, {
+	    key: "onEditEnd",
+	    value: function onEditEnd(value, id) {
+
+	      this.log("End of edition. Current value is: " + value);
+	    }
+	  }, {
+	    key: "onEditStart",
+	    value: function onEditStart(value, id) {
+
+	      this.log("Start of edition. Current value is: " + value);
 	    }
 	  }, {
 	    key: "render",
 	    value: function render() {
+	      var _this2 = this;
 
 	      var i = 0;
 	      var self = this;
 
-	      function getEditLabel(text) {
+	      function getEditLabel(el) {
+	        var opts = _objectWithoutProperties(el.options, []);
 
 	        i++;
-	        return _react2.default.createElement(_editlabel2.default, { onChange: self.onListChange.bind(self), value: text, hintText: "writeSomething", name: "field" + i, id: i });
+	        return _react2.default.createElement(_reactMaterialEditlabel2.default, _extends({}, opts, { onEditStart: self.onEditStart.bind(self), onChange: self.onChange.bind(self), onEditEnd: self.onEditEnd.bind(self), defValue: el.label, hintText: "writeSomething", name: "field" + i, id: i }));
 	      }
 
 	      var list = this.state.labels.map(function (el) {
 
 	        return _react2.default.createElement(_List.ListItem, { key: i, disabled: true, primaryText: getEditLabel(el) });
+	      });
+
+	      var log = this.state.log.map(function (l, index) {
+
+	        return _react2.default.createElement(
+	          "p",
+	          { key: index },
+	          _react2.default.createElement(
+	            "b",
+	            null,
+	            "#",
+	            _this2.state.log.length - index
+	          ),
+	          " ",
+	          l
+	        );
 	      });
 
 	      return _react2.default.createElement(
@@ -166,6 +204,16 @@
 	            _List.List,
 	            null,
 	            list
+	          ),
+	          _react2.default.createElement(
+	            _Paper2.default,
+	            { zDepth: 2, style: { padding: "20px", height: "200px", overflowY: "scroll" } },
+	            _react2.default.createElement(
+	              "h3",
+	              null,
+	              "Logs created in EditLabel callbacks:"
+	            ),
+	            log
 	          )
 	        )
 	      );
@@ -21910,7 +21958,240 @@
 	module.exports = keyOf;
 
 /***/ },
-/* 178 */,
+/* 178 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	      value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _TextField = __webpack_require__(179);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	@author Maciej Sikora
+	Class creates element with two states - label, and TextField in edit mode
+	**/
+	var EditLabel = function (_Component) {
+	      _inherits(EditLabel, _Component);
+
+	      //edition on double click
+
+
+	      function EditLabel(props) {
+	            _classCallCheck(this, EditLabel);
+
+	            var _this = _possibleConstructorReturn(this, (EditLabel.__proto__ || Object.getPrototypeOf(EditLabel)).call(this, props));
+
+	            _this.bodyClickEvent = null; //click event on page body
+	            _this.changeDeffer = null;
+
+	            _this.state = {
+
+	                  edit: false, //edit mode
+	                  value: _this.props.defValue
+	            };
+
+	            _this.lastValue = _this.props.defValue;
+
+	            return _this;
+	      }
+
+	      //input value change handler
+	      //edition on single click
+
+
+	      _createClass(EditLabel, [{
+	            key: 'handleChange',
+	            value: function handleChange(e) {
+	                  var _this2 = this;
+
+	                  this.setState({ value: e.target.value });
+
+	                  //deffer to less saving in network
+	                  if (this.changeDeffer != null) clearTimeout(this.changeDeffer);
+
+	                  this.changeDeffer = setTimeout(function () {
+
+	                        if (_this2.props.onChange !== null) _this2.props.onChange(_this2.state.value, _this2.props.id);
+	                  }, 400);
+	            }
+	      }, {
+	            key: 'cancelEditMode',
+	            value: function cancelEditMode() {
+
+	                  //we clicked ouside current edited element
+	                  this._removeBodyListener();
+	                  this.setState({ edit: false }); //cancel edit
+
+	                  if (this.state.value.trim().length === 0 && !this.props.clearEnable) {
+
+	                        //value was cleared but it is blocked
+	                        this.setState({ value: this.lastValue }); //back to last value
+	                  } else this.lastValue = this.state.value; //save last value;
+
+	                  if (this.props.onEditEnd != null) {
+
+	                        this.props.onEditEnd(this.state.value, this.props.id);
+	                  }
+	            }
+	      }, {
+	            key: '_bodyClickHandler',
+	            value: function _bodyClickHandler(e) {
+
+	                  if (!e.target.dataset || typeof e.target.dataset.id === "undefined" || e.target.dataset.id != this.props.id) {
+
+	                        this.cancelEditMode();
+	                  }
+	            }
+	      }, {
+	            key: '_removeBodyListener',
+	            value: function _removeBodyListener() {
+
+	                  if (this.bodyClickEvent !== null) document.removeEventListener("click", this.bodyClickEvent, false);
+	            }
+	      }, {
+	            key: '_addBodyListener',
+	            value: function _addBodyListener() {
+
+	                  this._removeBodyListener();
+	                  this.bodyClickEvent = this._bodyClickHandler.bind(this);
+	                  document.addEventListener("click", this.bodyClickEvent, false);
+	            }
+	      }, {
+	            key: 'handleLabelClick',
+	            value: function handleLabelClick(type, e) {
+
+	                  if (this.props.initBy !== type) return; //it is not this event
+
+	                  //block propagate
+	                  e.stopPropagation();
+	                  e.preventDefault();
+
+	                  this.setState({ edit: true });
+
+	                  //set binding
+	                  this._addBodyListener();
+
+	                  if (this.props.onEditStart !== null) this.props.onEditStart(this.state.value, this.props.id);
+	            }
+	      }, {
+	            key: 'handleKeyPress',
+	            value: function handleKeyPress(e) {
+
+	                  if (e.charCode === 13) {
+	                        //enter
+
+	                        if (this.props.onEnterClick !== null) this.props.onEnterClick(this.state.value, this.props.id);
+
+	                        this.cancelEditMode();
+	                  }
+	            }
+	      }, {
+	            key: 'handleInputClick',
+	            value: function handleInputClick(e) {
+
+	                  //block events bubbling
+	                  e.stopPropagation();
+	            }
+	      }, {
+	            key: 'getLabelStyle',
+	            value: function getLabelStyle() {
+
+	                  return {
+	                        cursor: "pointer"
+	                  };
+	            }
+	      }, {
+	            key: 'render',
+	            value: function render() {
+
+	                  var props = this.props;
+
+	                  var tf = _objectWithoutProperties(props.input, []); //textField props
+
+
+	                  var label = _objectWithoutProperties(props.label, []); //label props
+
+	                  var inputJSX = void 0;
+	                  if (this.props.material) inputJSX = _react2.default.createElement(_TextField2.default, _extends({}, tf, { ref: 'input', 'data-id': props.id, name: "input_" + props.id, onClick: this.handleInputClick.bind(this), value: this.state.value, onChange: this.handleChange.bind(this), onKeyPress: this.handleKeyPress.bind(this) }));else //standard input
+	                        inputJSX = _react2.default.createElement('input', _extends({}, tf, { ref: 'input', 'data-id': props.id, name: "input_" + props.id, onClick: this.handleInputClick.bind(this), value: this.state.value, onChange: this.handleChange.bind(this), onKeyPress: this.handleKeyPress.bind(this) }));
+
+	                  var element = void 0;
+	                  if (this.state.edit) element = inputJSX;else element = _react2.default.createElement(
+	                        'label',
+	                        _extends({ style: this.getLabelStyle(), ref: 'label'
+	                        }, label, {
+	                              onDoubleClick: this.handleLabelClick.bind(this, EditLabel.INIT_DBCLICK),
+	                              onClick: this.handleLabelClick.bind(this, EditLabel.INIT_CLICK)
+	                        }),
+	                        this.state.value
+	                  );
+
+	                  return element;
+	            }
+	      }]);
+
+	      return EditLabel;
+	}(_react.Component);
+
+	EditLabel.INIT_CLICK = 1;
+	EditLabel.INIT_DBCLICK = 2;
+	;
+
+	EditLabel.propTypes = {
+
+	      input: _react2.default.PropTypes.object,
+	      label: _react2.default.PropTypes.object,
+	      initBy: _react2.default.PropTypes.number.isRequired,
+	      id: _react2.default.PropTypes.number.isRequired,
+	      defValue: _react2.default.PropTypes.string,
+	      onEditEnd: _react2.default.PropTypes.func, //calls on end of edit
+	      onChange: _react2.default.PropTypes.func, //calls on every change
+	      onEnterClick: _react2.default.PropTypes.func, //calls after enter click
+	      onEditStart: _react2.default.PropTypes.func, //calls when edition starts
+	      material: _react2.default.PropTypes.bool, //if true it uses TextField from material if false <input>
+	      clearEnable: _react2.default.PropTypes.bool //is possible to remove all text - clear it
+
+	};
+
+	EditLabel.defaultProps = {
+	      input: { className: "editlabel-input" },
+	      label: { className: "editlabel-label" },
+	      initBy: EditLabel.INIT_CLICK, //default is single click
+	      defValue: "",
+	      clearEnable: false,
+	      onChange: null,
+	      onEditEnd: null, //
+	      onEnterClick: null,
+	      onEditStart: null,
+	      material: true
+	};
+
+	exports.default = EditLabel;
+
+/***/ },
 /* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -35909,196 +36190,6 @@
 	ActionInfo.muiName = 'SvgIcon';
 
 	exports.default = ActionInfo;
-
-/***/ },
-/* 394 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _TextField = __webpack_require__(179);
-
-	var _TextField2 = _interopRequireDefault(_TextField);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	Class creates element with two states - label, and TextField in edit mode
-	**/
-	var EditLabel = function (_Component) {
-	  _inherits(EditLabel, _Component);
-
-	  function EditLabel(props) {
-	    _classCallCheck(this, EditLabel);
-
-	    var _this = _possibleConstructorReturn(this, (EditLabel.__proto__ || Object.getPrototypeOf(EditLabel)).call(this, props));
-
-	    _this.bodyClickEvent = null; //click event on page body
-	    _this.changeDeffer = null;
-
-	    _this.state = {
-
-	      edit: false, //edit mode
-	      value: _this.props.value
-	    };
-
-	    return _this;
-	  }
-
-	  _createClass(EditLabel, [{
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(props) {
-
-	      this.setState({ value: props.value });
-	    }
-
-	    //input value change handler
-
-	  }, {
-	    key: 'handleChange',
-	    value: function handleChange(e) {
-	      var _this2 = this;
-
-	      this.setState({ value: e.target.value });
-
-	      //deffer to less saving in network
-	      if (this.changeDeffer != null) clearTimeout(this.changeDeffer);
-
-	      this.changeDeffer = setTimeout(function () {
-
-	        if (_this2.props.onChange !== null) _this2.props.onChange(_this2.state.value, _this2.props.id);
-	      }, 400);
-	    }
-	  }, {
-	    key: 'cancelEditMode',
-	    value: function cancelEditMode() {
-
-	      //we clicked ouside current edited element
-	      this._removeBodyListener();
-	      this.setState({ edit: false }); //cancel edit
-	    }
-	  }, {
-	    key: '_bodyClickHandler',
-	    value: function _bodyClickHandler(e) {
-
-	      if (!e.target.dataset || typeof e.target.dataset.id === "undefined" || e.target.dataset.id != this.props.id) {
-
-	        this.cancelEditMode();
-	      }
-	    }
-	  }, {
-	    key: '_removeBodyListener',
-	    value: function _removeBodyListener() {
-
-	      if (this.bodyClickEvent !== null) document.removeEventListener("click", this.bodyClickEvent, false);
-	    }
-	  }, {
-	    key: '_addBodyListener',
-	    value: function _addBodyListener() {
-
-	      this._removeBodyListener();
-	      this.bodyClickEvent = this._bodyClickHandler.bind(this);
-	      document.addEventListener("click", this.bodyClickEvent, false);
-	    }
-	  }, {
-	    key: 'handleLabelClick',
-	    value: function handleLabelClick() {
-
-	      this.setState({ edit: true });
-
-	      //set binding
-	      this._addBodyListener();
-	    }
-	  }, {
-	    key: 'handleKeyPress',
-	    value: function handleKeyPress(e) {
-
-	      if (e.charCode === 13) {
-	        //enter
-
-	        if (this.props.onEnterClick !== null) this.props.onEnterClick(this.state.value, this.props.id);
-
-	        this.cancelEditMode();
-	      }
-	    }
-	  }, {
-	    key: 'getLabelStyle',
-	    value: function getLabelStyle() {
-
-	      return {
-	        cursor: "pointer"
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var id = _props.id;
-	      var className = _props.className;
-	      var onChange = _props.onChange;
-	      var onKeyPress = _props.onKeyPress;
-	      var inputClassName = _props.inputClassName;
-	      var onEnterClick = _props.onEnterClick;
-	      var labelClassName = _props.labelClassName;
-
-	      var other = _objectWithoutProperties(_props, ['id', 'className', 'onChange', 'onKeyPress', 'inputClassName', 'onEnterClick', 'labelClassName']);
-
-	      var element = void 0;
-	      if (this.state.edit) element = _react2.default.createElement(_TextField2.default, _extends({}, other, { ref: 'input', 'data-id': this.props.id, value: this.state.value, className: this.props.inputClassName, onChange: this.handleChange.bind(this), onKeyPress: this.handleKeyPress.bind(this) }));else element = _react2.default.createElement(
-	        'label',
-	        { style: this.getLabelStyle(), ref: 'label', className: this.props.labelClassName, onClick: this.handleLabelClick.bind(this) },
-	        this.state.value
-	      );
-
-	      return element;
-	    }
-	  }]);
-
-	  return EditLabel;
-	}(_react.Component);
-
-	;
-
-	EditLabel.propTypes = {
-	  id: _react2.default.PropTypes.number.isRequired,
-	  value: _react2.default.PropTypes.string,
-	  inputClassName: _react2.default.PropTypes.string,
-	  labelClassName: _react2.default.PropTypes.string,
-
-	  onChange: _react2.default.PropTypes.func,
-	  onEnterClick: _react2.default.PropTypes.func
-
-	};
-
-	EditLabel.defaultProps = {
-	  value: "",
-	  inputClassName: "editlabel-input",
-	  labelClassName: "editlabel-label",
-	  onChange: null,
-	  onEnterClick: null
-	};
-
-	exports.default = EditLabel;
 
 /***/ }
 /******/ ]);
